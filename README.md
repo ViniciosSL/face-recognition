@@ -3,19 +3,19 @@ Reconhecimento facial utilizando PCA e kNN
 
 ## Aplicação em desenvolvimento!
 
-- [Contextualização](#-Contextualização)
-- [Técnicas Utilizadas](#-Técnicas-Utilizadas)
+- [Contextualização](#-contextualização)
+- [Técnicas Utilizadas](#-técnicas-utilizadas)
 - [Tecnologias](#-tecnologias)
-- [Executando a Aplicação](#-Executando-a-Aplicação)
-    - [Opção 1: Docker Container](#-opção-1:-Docker-Container)
-    - [Opção 2: Ambiente Virtual](#-opção-2:-Ambiente-Virtual)
+- [Executando a Aplicação](#-executando-a-aplicação)
+    - [Docker Container](#-docker-container)
+    - [Ambiente Virtual](#-ambiente-virtual)
 
 
 ## Executando a Aplicação
 
 A aplicação pode ser executada por meio de um docker container ou de um ambiente virutal para o python. Abaixo segue um passo a passo para as duas opções.
 
-### Opção 1: Docker Container
+### Docker Container
 Para executar a aplicação em um docker container, basta seguir três etapas:
 
 1. Ative o docker em sua máquina;
@@ -27,7 +27,7 @@ Para executar a aplicação em um docker container, basta seguir três etapas:
 > docker-compose run face-recognition
 ```
 
-### Opção 2: Ambiente Virtual
+### Ambiente Virtual
 
 Como alternativa ao docker, é possível criar um ambiente virtual para o python seguindo os passos:
 
