@@ -3,9 +3,9 @@ Reconhecimento facial utilizando PCA e kNN
 
 ## Aplicação em desenvolvimento!
 
-- [Contextualização](#-contextualização)
-- [Técnicas Utilizadas](#-técnicas-utilizadas)
-- [Tecnologias](#-tecnologias)
+<!-- - [Contextualização](#-contextualização) -->
+<!-- - [Técnicas Utilizadas](#-técnicas-utilizadas) -->
+<!-- - [Tecnologias](#-tecnologias) -->
 - [Executando a Aplicação](#-executando-a-aplicação)
     - [Docker Container](#-docker-container)
     - [Ambiente Virtual](#-ambiente-virtual)
