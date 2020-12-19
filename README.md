@@ -7,8 +7,8 @@ Reconhecimento facial utilizando PCA e kNN
 - [Técnicas Utilizadas](#-Técnicas-Utilizadas)
 - [Tecnologias](#-tecnologias)
 - [Executando a Aplicação](#-Executando-a-Aplicação)
-    - [Docker Container](#-opção-1:-Docker-Container)
-    - [Ambiente Virtual](#-opção-2:-Ambiente-Virtual)
+    - [Opção 1: Docker Container](#-opção-1:-Docker-Container)
+    - [Opção 2: Ambiente Virtual](#-opção-2:-Ambiente-Virtual)
 
 
 ## Executando a Aplicação
