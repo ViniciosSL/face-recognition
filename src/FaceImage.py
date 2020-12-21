@@ -8,7 +8,7 @@ Turma 2
     - Classe FaceImage
 
 Autor: Marcus Moresco Boeno
-Último update: 2020-12-05
+Último update: 2020-12-20
 
 """
 
