@@ -1,6 +1,8 @@
 # face-recognition
 Reconhecimento facial utilizando PCA e kNN
 
+Aplicação desenvolvida como atividade final da disciplina de Aprendizado de Máquina II da Pós-Graduação em Data Science (FURB)
+
 ## Aplicação em desenvolvimento!
 
 - [Contextualização](#contextualização)
