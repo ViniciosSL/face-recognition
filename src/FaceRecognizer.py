@@ -71,6 +71,16 @@ class FaceRecognizer:
         # Calcula matriz com diferenças
         diffs = self.__calcDiff(mean_img)
 
+        # Calcula matriz de covariancia
+        cov_mat = np.matmul(diffs.T, diffs)
+
+        # Calcula autovalores e autovetores da matriz de covariancia
+        evls, evcs = np.linalg.eig(cov_mat)
+        
+        # Ordena autovalores e autovetores por autovalor decrescente
+        emtrcs = [[x,y] for x,y in sorted(zip(evls, evcs), reverse=True)]
+        
+
     def __calcMean(self) -> np.array:
         """Calcula imagem média
 
@@ -78,7 +88,7 @@ class FaceRecognizer:
             - Sem argumentos.
         
         > Output:
-            - (np.ndarray): Imagem média na forma de array.        
+            - (np.ndarray): Imagem média na forma de vetor coluna.        
         """
         # Le dados da primeira imagem para formar base da imagem média
         mean_img = np.array(imread(self.__imgs[0].data), np.float64)
@@ -89,7 +99,7 @@ class FaceRecognizer:
         mean_img = mean_img/len(self.__imgs)
 
         # Retorna imagem média
-        return mean_img
+        return mean_img.T.reshape(mean_img.size, 1)
     
     def __calcDiff(self, mean_img:np.array) -> np.array:
         """Calcula matriz com diferenças entre imagem média e imagens de
@@ -99,16 +109,14 @@ class FaceRecognizer:
             - mean_img (np.array): Imagem de treino média
         """
         # Inicia array de diffs com a primeira imagem
-        diffs = np.subtract(imread(self.__imgs[0].data), mean_img)
-
-        # Ajusta diffs para array vetor coluna
-        diffs = diffs.reshape(diffs.size, 1)
+        sample = imread(self.__imgs[0].data)
+        diffs = np.subtract(sample.T.reshape(sample.size, 1), mean_img)
 
         # Calcula diferenças entre imagem média e imagens de treino restantes
         for i in range(1, len(self.__imgs)):
-            tmp_diff = np.subtract(imread(self.__imgs[i].data), mean_img)
-            tmp_diff = tmp_diff.reshape(tmp_diff.size, 1)
-            diffs = np.hstack((diffs, tmp_diff))
+            tmp = imread(self.__imgs[i].data)
+            tmp = np.subtract(tmp.T.reshape(tmp.size, 1), mean_img)
+            diffs = np.hstack((diffs, tmp))
         
         # Retorna array com dados de diferença
         return diffs
