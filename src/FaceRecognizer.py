@@ -8,12 +8,15 @@ Turma 2
     - Classe FaceRecognizer
 
 Autor: Marcus Moresco Boeno
-Último update: 2020-12-20
+Último update: 2020-12-22
 
 """
 
+# Imports de bibliotecas built-in
+from math import sqrt
+
 # Import de bibliotecas de terceiros
-from matplotlib.image import imread
+from matplotlib.image import imread, imsave
 import numpy as np
 
 # Imports de bibliotecas da aplicação
@@ -75,11 +78,61 @@ class FaceRecognizer:
         cov_mat = np.matmul(diffs.T, diffs)
 
         # Calcula autovalores e autovetores da matriz de covariancia
-        evls, evcs = np.linalg.eig(cov_mat)
+        evls, evts = np.linalg.eig(cov_mat)
         
         # Ordena autovalores e autovetores por autovalor decrescente
-        emtrcs = [[x,y] for x,y in sorted(zip(evls, evcs), reverse=True)]
+        evts_sorted = [y for _,y in sorted(zip(evls, evts), reverse=True)]
+
+        # Calcula eigenfaces
+        eigenfaces = self.__calcEigenFaces(evts_sorted, diffs, k)
+
+        # # Exporta eigenfaces
+        # self.__save_eigen_faces(eigenfaces)
+
+    def __save_eigen_faces(self, eigenfaces:np.array):
+        """Exporta k-eigenfaces
         
+        > Argumentos:
+            - eigenfaces (np.array): Array contendo eigenfaces
+        
+        > Output:
+            - Sem output.
+        """
+        for pos, eigenface in enumerate(eigenfaces.T):
+            imsave(
+                "".join(["eigenface_", str(pos+1), ".jpg"]), 
+                eigenface.reshape(70, 80).T
+                )
+    
+    def __calcEigenFaces(self, evts:list, diffs:np.array, k:int):
+        """Calcula eigenfaces
+        
+        > Argumentos:
+            - evts (list): Lista contendo autovalores e autovetores;
+            - diffs (np.arrray): Array contendo imagens diferença;
+            - k (int): Número de componentes para cálculo.
+        
+        > Output:
+            - (np.array): Array contendo k-eigenfaces.
+        """
+        # Monta matriz com autovetores de interesse
+        k_evts = evts[0].reshape(evts[0].size, 1)
+        for j in range(1, k):
+            k_evts = np.hstack((k_evts, evts[j].reshape(evts[j].size, 1)))
+        
+        # Calcula eigenfaces
+        eigenfaces = np.matmul(diffs, k_evts)
+
+        # Aplica normalização L2 em cada eigenface
+        eigenfaces = np.apply_along_axis(
+            # Função anônima (lambda) para cálculo da normalização L2
+            func1d=lambda x: np.divide(x, sqrt(np.sum(np.power(x, 2)))),
+            axis=0,
+            arr=eigenfaces.T
+        ).T
+
+        # Retorna matriz com eigenfaces
+        return eigenfaces
 
     def __calcMean(self) -> np.array:
         """Calcula imagem média
