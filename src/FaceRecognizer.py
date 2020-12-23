@@ -8,7 +8,7 @@ Turma 2
     - Classe FaceRecognizer
 
 Autor: Marcus Moresco Boeno
-Último update: 2020-12-22
+Último update: 2020-12-23
 
 """
 
@@ -69,13 +69,13 @@ class FaceRecognizer:
             - Sem output.
         """
         # Calcula imagem média
-        mean_img = self.__calcMean()
+        self.__calcMean()
         
         # Calcula matriz com diferenças
-        diffs = self.__calcDiff(mean_img)
+        self.__calcDiff()
 
         # Calcula matriz de covariancia
-        cov_mat = np.matmul(diffs.T, diffs)
+        cov_mat = np.matmul(self.__diffs.T, self.__diffs)
 
         # Calcula autovalores e autovetores da matriz de covariancia
         evls, evts = np.linalg.eig(cov_mat)
@@ -84,36 +84,38 @@ class FaceRecognizer:
         evts_sorted = [y for _,y in sorted(zip(evls, evts), reverse=True)]
 
         # Calcula eigenfaces
-        eigenfaces = self.__calcEigenFaces(evts_sorted, diffs, k)
+        self.__calcEigenFaces(evts_sorted, k)
 
         # # Exporta eigenfaces
-        # self.__save_eigen_faces(eigenfaces)
+        # self.__save_eigen_faces()
 
-    def __save_eigen_faces(self, eigenfaces:np.array):
+        # Projeta imagens de treino para novo espaço k-dimensional
+        self.__projections = np.matmul(self.__eigenfaces.T, self.__diffs)
+    
+    def __save_eigen_faces(self):
         """Exporta k-eigenfaces
         
         > Argumentos:
-            - eigenfaces (np.array): Array contendo eigenfaces
+            - Sem argumentos.
         
         > Output:
             - Sem output.
         """
-        for pos, eigenface in enumerate(eigenfaces.T):
+        for pos, eigenface in enumerate(self.__eigenfaces.T):
             imsave(
                 "".join(["eigenface_", str(pos+1), ".jpg"]), 
                 eigenface.reshape(70, 80).T
                 )
     
-    def __calcEigenFaces(self, evts:list, diffs:np.array, k:int):
+    def __calcEigenFaces(self, evts:list, k:int):
         """Calcula eigenfaces
         
         > Argumentos:
             - evts (list): Lista contendo autovalores e autovetores;
-            - diffs (np.arrray): Array contendo imagens diferença;
             - k (int): Número de componentes para cálculo.
         
         > Output:
-            - (np.array): Array contendo k-eigenfaces.
+            - Sem output.
         """
         # Monta matriz com autovetores de interesse
         k_evts = evts[0].reshape(evts[0].size, 1)
@@ -121,7 +123,7 @@ class FaceRecognizer:
             k_evts = np.hstack((k_evts, evts[j].reshape(evts[j].size, 1)))
         
         # Calcula eigenfaces
-        eigenfaces = np.matmul(diffs, k_evts)
+        eigenfaces = np.matmul(self.__diffs, k_evts)
 
         # Aplica normalização L2 em cada eigenface
         eigenfaces = np.apply_along_axis(
@@ -131,17 +133,17 @@ class FaceRecognizer:
             arr=eigenfaces.T
         ).T
 
-        # Retorna matriz com eigenfaces
-        return eigenfaces
+        # Salva eigenfaces como atributo da instância
+        self.__eigenfaces = eigenfaces
 
-    def __calcMean(self) -> np.array:
+    def __calcMean(self):
         """Calcula imagem média
 
         > Argumentos:
             - Sem argumentos.
         
         > Output:
-            - (np.ndarray): Imagem média na forma de vetor coluna.        
+            - Sem output.        
         """
         # Le dados da primeira imagem para formar base da imagem média
         mean_img = np.array(imread(self.__imgs[0].data), np.float64)
@@ -151,28 +153,31 @@ class FaceRecognizer:
             mean_img += np.array(imread(self.__imgs[i].data), np.float64)
         mean_img = mean_img/len(self.__imgs)
 
-        # Retorna imagem média
-        return mean_img.T.reshape(mean_img.size, 1)
+        # Salva imagem média como atributo da instância
+        self.__mean_img = mean_img.T.reshape(mean_img.size, 1)
     
-    def __calcDiff(self, mean_img:np.array) -> np.array:
+    def __calcDiff(self):
         """Calcula matriz com diferenças entre imagem média e imagens de
         treino
 
         > Argumentos:
-            - mean_img (np.array): Imagem de treino média
+            - Sem argumentos
+        
+        > Output:
+            - Sem output
         """
         # Inicia array de diffs com a primeira imagem
         sample = imread(self.__imgs[0].data)
-        diffs = np.subtract(sample.T.reshape(sample.size, 1), mean_img)
+        diffs = np.subtract(sample.T.reshape(sample.size, 1), self.__mean_img)
 
         # Calcula diferenças entre imagem média e imagens de treino restantes
         for i in range(1, len(self.__imgs)):
             tmp = imread(self.__imgs[i].data)
-            tmp = np.subtract(tmp.T.reshape(tmp.size, 1), mean_img)
+            tmp = np.subtract(tmp.T.reshape(tmp.size, 1), self.__mean_img)
             diffs = np.hstack((diffs, tmp))
         
-        # Retorna array com dados de diferença
-        return diffs
+        # Salva diffs como atributo da instância
+        self.__diffs = diffs
 
     def predict(img) -> tuple:
         """Classifica uma imagem com o modelo treinado
