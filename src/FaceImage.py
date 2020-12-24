@@ -8,22 +8,20 @@ Turma 2
     - Classe FaceImage
 
 Autor: Marcus Moresco Boeno
-Último update: 2020-12-20
+Último update: 2020-12-24
 
 """
-
-# Import de bibliotecas de terceiros
-import numpy as np
-
 
 class FaceImage:
     """Imagem da face de um ser humano
 
     > Parâmetros de Classe:
-        - ??
+        - img_id (int): ID da imagem;
+        - label (int): Label da imagem;
+        - data (str): Caminho (system path) até a imagem.
     """
     # Método construtor
-    def __init__(self, img_id:int, label:int, data:np.ndarray):
+    def __init__(self, img_id:int, label:int, data:str):
         self.img_id = img_id 
         self.label = label
         self.data = data
@@ -77,23 +75,23 @@ class FaceImage:
         self.label_getter = img_label
     
     @property
-    def data(self) -> np.ndarray:
+    def data(self) -> str:
         """Método Getter para dados da imagem
 
         > Arguments:
             - No arguments.
         
         > Output:
-            - (np.ndarray): Vetor coluna com dados da imagem.
+            - (str): Caminho (system path) até a imagem.
         """
         return self.data_getter
     
     @data.setter
-    def data(self, img_data:int):
+    def data(self, img_data:str):
         """Método Setter para dados da imagem
 
         > Arguments:
-            - img_data (np.ndarray): Vetor coluna com dados da imagem.
+            - img_data (str): Caminho (system path) até a imagem.
         
         > Output:
             - No output.
@@ -101,14 +99,4 @@ class FaceImage:
         self.data_getter = img_data
 
     def __str__(self):
-        return f"{self.img_id} {self.label} {self.data}"
-
-
-if __name__ == "__main__":
-
-    test = FaceImage(2, 2, 1)
-    print(test)
-    print(test.label)
-    test.label = 345
-    print(test)
-    
+        return f"ID={self.img_id}; Label={self.label}; Path={self.data}"
