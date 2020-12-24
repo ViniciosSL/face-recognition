@@ -7,7 +7,7 @@ Turma 2
 > Reconhecimento facial utilizando PCA + kNN
 
 Autor: Marcus Moresco Boeno
-Último update: 2020-12-20
+Último update: 2020-12-24
 
 """
 
@@ -15,10 +15,6 @@ Autor: Marcus Moresco Boeno
 import os
 from math import ceil
 from random import randint
-
-# Import de bibliotecas de terceiros
-from matplotlib.image import imread
-import numpy as np
 
 # Imports de bibliotecas da aplicação
 from src.FaceRecognizer import FaceRecognizer
@@ -96,6 +92,27 @@ def load_dataset(dir_path:str, toTrain:float) -> list:
     return train, test
 
 
+def get_overall_accuracy(predicted:list, truth:list) -> float:
+    """Calcula acurácia global do modelo sobre o conjunto de teste
+    
+    > Argumentos:
+        - predicted (list): Lista com labels preditas para o conjunto de 
+            teste;
+        - truth (list): Lista com labels originais do conjunto de teste.
+    
+    > Output:
+        - (float): Acurácia global do modelo.
+    """
+    # Inicia contador e checa labels corretas
+    corrects = 0
+    for x, y in zip(predicted, truth):
+        if x == y:
+            corrects += 1
+    
+    # Retorna porcentagem de acertos
+    return (corrects/len(truth))*100
+
+
 def main():
     """Aplica classes e métodos para reconhecimento facial
 
@@ -108,17 +125,25 @@ def main():
     # Carrega banco de dados separando em treino e teste
     train_imgs, test_imgs = load_dataset("imgs", 0.7)
 
-    # Cria instância da classe Face_Reckognizer
-    model = FaceRecognizer(train_imgs)
+    # Realiza treinamento do modelo indicando o número de eigenfaces
+    for k in range(10, 21):
 
-    # # Realiza treinamento do modelo indicando o número de eigenfaces
-    # model.fit(10)
+        # Cria instância da classe Face_Reckognizer
+        model = FaceRecognizer(train_imgs)
 
-    # # Resgata métricas do modelo utilizando o conjunto de teste
-    # accuracy = model.model_accuracy(test_imgs)
+        # Realiza treinamento do modelo
+        model.fit(k)
 
-    # # Apresenta resumo das métricas em tela
-    # print(f"Acurácia de {accuracy.2f}")
+        # Classifica conjunto de teste
+        res = model.predict(test_imgs)
+        
+        # Recupera métrica de acurácia
+        predicted_labels = [x for x,_ in res]
+        test_labels = [img.label for img in test_imgs]
+        accur = get_overall_accuracy(predicted_labels, test_labels)
+
+        # Apresenta métrica de acurácia em tela
+        print(f"{k} componentes principais, acurácia: {accur:.2f}%.")
 
 
 if __name__ == "__main__":
