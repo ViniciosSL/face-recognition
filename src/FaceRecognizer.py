@@ -8,7 +8,7 @@ Turma 2
     - Classe FaceRecognizer
 
 Autor: Marcus Moresco Boeno
-Último update: 2020-12-23
+Último update: 2020-12-24
 
 """
 
@@ -18,9 +18,6 @@ from math import sqrt
 # Import de bibliotecas de terceiros
 from matplotlib.image import imread, imsave
 import numpy as np
-
-# Imports de bibliotecas da aplicação
-from .FaceImage import FaceImage
 
 
 class FaceRecognizer:
@@ -179,29 +176,47 @@ class FaceRecognizer:
         # Salva diffs como atributo da instância
         self.__diffs = diffs
 
-    def predict(img) -> tuple:
+    def predict(self, imgs_predict:list) -> list:
         """Classifica uma imagem com o modelo treinado
 
         > Argumentos:
-            - img (FaceImage): Imagem da classe FaceImage a ser
-                classificada
+            - imgs_predict (list): Lista de imagens da classe FaceImage 
+                a serem classificadas.
         
         > Ouput:
-            - (tuple): Tupla com 3 elementos:
+            - (list): Lista contendo tuplas com 2 elementos:
                 [0]: Classificação (label) da imagem
                 [1]: Distância ao vizinho mais próximo
-                [2]: Erro de reconstrução 
         """
-        pass
+        # Cria lista vazia para armazenar os resultados
+        res = []
 
-    def model_accuracy(test_imgs:list) -> float:
-        """Acurácia do modelo baseadas em um conjunto de teste
+        # Recupera labels das imagens de treino
+        labels = [img.label for img in self.__imgs]
+                
+        # Itera sobre imagens a serem classificadas
+        for img in imgs_predict:
 
-        > Argumentos:
-            - test_imgs (list): Lista de objetos da classe FaceImage
-                representando o conjunto de teste.
+            img_class = [img.label]
+            
+            # Calcula diferença entre imagem média e imagem a ser classificada
+            img_data = imread(img.data)
+            diff = np.subtract(
+                img_data.T.reshape(img_data.size, 1), 
+                self.__mean_img
+            )
+
+            # Projeta a nova imagem para o espaço k-dimensional das eigenfaces
+            img_projected = np.matmul(self.__eigenfaces.T, diff)
+
+            # Calcula distancia euclidiana entre nova imagem e imagens de treino
+            dist = np.sum(
+                np.square(img_projected - self.__projections), 
+                axis = 0
+            )
+                            
+            # Recupera label mais próxima e adiciona ao vetor com respostas
+            res.append([[y, x] for x, y in sorted(zip(dist, labels))][0])
         
-        > Output:
-            - (float): Acurácia do modelo.
-        """
-        pass
+        # Retorna labels e distâncias
+        return res
